@@ -1,14 +1,13 @@
-# Practical Byzantine Fault Tolerance
+# Comunication Consensus mechanism for resource optimization
 
 ## Table of Contents
 1. Information
 2. Requirements
 3. How-to Test
 4. Notes
-5. Results
 
 ## 1.0 Information
-This is a simple implementation in Python of the well-known Practical Byzantine Fault Tolerance (PBFT) consensus algorithm [[1]](https://pmg.csail.mit.edu/papers/osdi99.pdf). PBFT was designed as a method to solve the Byzantine General's Problem [[2]](https://www.microsoft.com/en-us/research/publication/byzantine-generals-problem/) in a distributed system. 
+This is a modified version of PBFT consensus algorithm [[1]](https://pmg.csail.mit.edu/papers/osdi99.pdf). PBFT was designed as a method to solve the Byzantine General's Problem [[2]](https://www.microsoft.com/en-us/research/publication/byzantine-generals-problem/) in a distributed system. This methode is designed to optimize the resourse usage and reduce network latency.
 
 There are a few types of byzantine faults:-
 1. Failure to return a result
@@ -28,10 +27,12 @@ Run **`python main.py`** to establish the nodes within the network.
 
 ***Example***
 ```
-C:\practical-byzantine-fault-tolerance> python main.py
+C:\practical-byzantine-fault-tolerance> python ./CCRO/main.py
+C:\practical-byzantine-fault-tolerance> python ./PBFT/main.py
 Total Nodes: 4 -> [0, 1, 2, 3]
 Byzantine Nodes: 1  -> [2]
-Commander Node: 1 -> [0]
+Commander Node: 1 -> 0
+Communication Node: 1
 
  Starting Nodes
 
@@ -47,7 +48,8 @@ This output shows the number of nodes within the system, which nodes are byzanti
 
 You can test each node's status by using the endpoint `/status` with curl to see if it is online or offline such as follows: **`curl http://localhost:8080`**
 
-Finally, to initiate the PBFT consensus send a **POST** request with a JSON file containing
+Finally, to initiate the consensus send a **POST** request with a JSON file containing
+sample file ( `sample run case.txt`) is prodided for the same.
 ```
 {"data": "anything-here-doesnt-matter"}
 ```
@@ -71,27 +73,5 @@ Things to note.
 3. Maximum 30 byzantine nodes for offline, and 20 for malicious as the error `OSError: [Errno 24] Too many open files` will be raised. (PS: I've changed my ulimit to 1040000). Results may be different.
 4. Results for the execution time were from testing on a Linux OS.
 
-## 5.0 Results
 
-After 1 round of consensus.
-```
-Offline Nodes
-n=1   => 0.028342s
-n=5   => 1.096763s
-n=10  => 6.201925s
-n=15  => 19.93381s
-n=20  => 45.66022s
-n=25  => 96.22578s
-n=30  => 171.4794s
-```
-
-```
-Malicious Nodes
-n=1   => 0.040438s
-n=5   => 1.985410s
-n=10  => 14.36813s
-n=15  => 44.56411s
-n=20  => 103.4499s
-n=25  => OSError: [Errno 24] Too many open files
-n=30  => OSError: [Errno 24] Too many open files
 ``````
