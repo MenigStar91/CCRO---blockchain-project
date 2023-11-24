@@ -1,0 +1,23 @@
+StatusCode        : 200
+StatusDescription : OK
+Content           : 
+                    PBFT Consensus Time: 12.233538s
+
+RawContent        : HTTP/1.1 200 OK
+                    Content-Length: 33
+                    Content-Type: text/plain; charset=utf-8
+                    Date: Fri, 24 Nov 2023 20:41:25 GMT
+                    Server: Python/3.10 aiohttp/3.9.0
+
+
+                    PBFT Consensus Time: 12.233538s
+
+Forms             : {}
+Headers           : {[Content-Length, 33], [Content-Type, text/plain;
+                    charset=utf-8], [Date, Fri, 24 Nov 2023 20:41:25 GMT],    
+                    [Server, Python/3.10 aiohttp/3.9.0]}
+Images            : {}
+InputFields       : {}
+Links             : {}
+ParsedHtml        : mshtml.HTMLDocumentClass
+RawContentLength  : 33

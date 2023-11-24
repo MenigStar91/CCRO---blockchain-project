@@ -7,3 +7,29 @@ $body = @{
 } | ConvertTo-Json
 
 Invoke-WebRequest -Uri http://localhost:8080/preprepare -Method Post -Headers $headers -Body $body
+
+
+
+/////////////////////////////////////////////////
+
+$headers = @{
+>>     "Content-Type" = "application/json"
+>> }
+>>
+>> $body = @{
+>>     "data" = "very-important-data"
+>> } | ConvertTo-Json
+>>
+>> # Specify a file to save the response                                      >> $responseFile = "./PBFT/response.txt"                                      >>                                                                            >> # Invoke the web request and save the response to a file                   
+>> Invoke-WebRequest -Uri http://localhost:8083/preprepare -Method Post -Heade
+rs $headers -Body $body -OutFile $responseFile
+>> 
+>> # Get the size of the file
+>> $responseSize = (Get-Item $responseFile).length
+>> 
+>> # Print the size
+>> Write-Host "Size of data/message transferred: $responseSize bytes"
+>> 
+>> # Optional: Display the content of the response file
+>> # Get-Content $responseFile
+>> 

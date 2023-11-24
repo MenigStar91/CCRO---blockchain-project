@@ -34,10 +34,10 @@ if __name__ == '__main__':
     print(f"Communication Node: {communication_node}")
     # Generates class objects for each nodes
     # Note: Byzantine nodes are generated respective to their type
-    print("\n\nStarting Nodes")
-    if type_of_byzantine == 0: # Offline Nodes
+    print("\n\nStarting Nodes") 
+    if type_of_byzantine == 0: # Offline Nodes 
         for i in total_nodes:
-            # Checks if node is commander node
+            # Checks if node is commander node 
             if int(i) == commander_node:
                 commander = node.Node(8080 + i, loop, communication_node, False, True, False)
                 # commander.start()
@@ -51,7 +51,7 @@ if __name__ == '__main__':
             elif int(i) in byzantine_nodes:
                 if len(total_nodes) < 5:
                     print(f"Node {i} started on http://0.0.0.0:{8080 + i}")
-                pass
+                pass 
             else:
                 rest = node.Node(8080 + i, loop, communication_node)
                 rest.start()
