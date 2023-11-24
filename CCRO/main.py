@@ -1,6 +1,6 @@
 import asyncio
-import node
-from PBFT import PBFTAggregator
+import node_withCN as node
+from CCRO import PBFTAggregator
 
 if __name__ == '__main__':
     # loop = asyncio.get_event_loop() (for python 3.10 and below)
@@ -21,7 +21,8 @@ if __name__ == '__main__':
     # Gets a list of the nodes that are byzantine
     byzantine_nodes = pbft.getByzantineNodes()
     # Gets a list of the commander nodes (For now only 1, can add manually in PBFT code)
-    commander_nodes = pbft.getCommanderNode()
+    commander_node = pbft.getCommanderNode()
+    communication_node = pbft.getCommunicationNode()
 
     # Empty List to store the nodes' aiohttp web server instance
     nodes = []
@@ -29,55 +30,60 @@ if __name__ == '__main__':
     # Prints information about the nodes in network
     print(f"Total Nodes: {len(total_nodes)} -> {total_nodes if len(total_nodes) < 10 else '[Too Many Nodes]'}")
     print(f"Byzantine Nodes: {len(byzantine_nodes)} -> {byzantine_nodes if len(byzantine_nodes) < 10 else '[Too Many Nodes]'}")
-    print(f"Commander Node: {len(commander_nodes)} -> {commander_nodes}")
-
+    print(f"Commander Node:  {commander_node}")
+    print(f"Communication Node: {communication_node}")
     # Generates class objects for each nodes
     # Note: Byzantine nodes are generated respective to their type
     print("\n\nStarting Nodes")
     if type_of_byzantine == 0: # Offline Nodes
         for i in total_nodes:
             # Checks if node is commander node
-            if int(i) in commander_nodes:
-                # Generates commander node class object
-                # Note: for offline byzantine type, commander node can never be 
-                # byzantine else PBFT won't be initiated
-                commander = node.Node(8080 + i, loop, total_nodes, False, True)
-                commander.start()
+            if int(i) == commander_node:
+                commander = node.Node(8080 + i, loop, communication_node, False, True, False)
+                # commander.start()
                 nodes.append(commander)
-            # Checks if node is a byzantine node
+            elif int(i) == communication_node :
+                temp_node = list(total_nodes)
+                temp_node.remove(commander_node)
+                temp_node.remove(communication_node)
+                communication = node.Node(8080+i, loop, temp_node, False, False, True )
+                communication.start()
             elif int(i) in byzantine_nodes:
-                # Forgo creating byzantine nodes class object
-                # to simulate offline byzantine nodes
                 if len(total_nodes) < 5:
                     print(f"Node {i} started on http://0.0.0.0:{8080 + i}")
                 pass
             else:
-                # Generates the rest of the nodes class object while ignoring byzantine
-                rest = node.Node(8080 + i, loop, total_nodes)
+                rest = node.Node(8080 + i, loop, communication_node)
                 rest.start()
                 nodes.append(rest)
     else: # Malicious (Falsifying) Nodes
         for i in total_nodes:
             # Checks if node is a commander node
-            if int(i) in commander_nodes:
+            if int(i) == commander_node:
                 # Generates commander node class object
-                commander = node.Node(8080 + i, loop, total_nodes, True if int(i) in byzantine_nodes else False, True)
-                commander.start()
+                commander = node.Node(8080 + i, loop, total_nodes, True if int(i) in byzantine_nodes else False, True, False)
+                # commander.start()
                 nodes.append(commander)
             # Checks if node is a byzantine node
+            elif int(i) == commander_node:
+                temp_node = list(total_nodes)
+                temp_node.remove(commander_node)
+                temp_node.remove(communication_node)
+                communication = node.Node(8080+i, loop, temp_node, False, False, True )
+                communication.start()
             elif int(i) in byzantine_nodes:
                 # Generates byzantine node class object to later falsify the data
-                byzantine = node.Node(8080 + i, loop, total_nodes, True)
+                byzantine = node.Node(8080 + i, loop, communication_node, True)
                 byzantine.start()
                 nodes.append(byzantine)
             else:
                 # Generates the rest of the nodes' class objects
-                rest = node.Node(8080 + i, loop, total_nodes)
+                rest = node.Node(8080 + i, loop, communication_node)
                 rest.start()
                 nodes.append(rest)
 
-    print(f"\nNode {int(commander_nodes[0])} is the commander node.\n" 
-          f"Running on http://0.0.0.0:{8080 + int(commander_nodes[0])}")
+    print(f"\nNode {int(commander_node)} is the commander node.\n" 
+          f"Running on http://0.0.0.0:{8080 + int(commander_node)}")
     # initializes the replies list to collect the replies of the nodes from PBFT
     # once nodes are created and started.
     PBFTAggregator.initReplies(len(total_nodes))

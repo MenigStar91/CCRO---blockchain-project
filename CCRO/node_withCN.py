@@ -2,7 +2,7 @@ import aiohttp
 from aiohttp import web
 import sys
 from datetime import datetime
-from PBFT import PBFTAggregator
+from CCRO import PBFTAggregator
 import random
 
 class Node:
@@ -17,11 +17,11 @@ class Node:
         self.port = port
         self.loop = loop 
         self.app = web.Application()
-        self.app.add_routes([[web.get('/status', self.status),
+        self.app.add_routes([web.get('/status', self.status),
                              web.post('/preprepare', self.pre_prepare),
                              web.post('/prepare', self.prepare),
                              web.post('/commit', self.commit),
-                             web.post('/reply', self.reply)]])
+                             web.post('/reply', self.reply)])
         self.handler = self.app.make_handler()
         self.corrupt = corrupt
         self.commander = commander 
@@ -107,8 +107,7 @@ class Node:
                 self.handler, '0.0.0.0', self.port)
             self.server = self.loop.run_until_complete(coroutine)
             address, port = self.server.sockets[0].getsockname()
-            if len(self.nodes_list) < 5:
-                print(f'Node {self.id} started on http://{address}:{port}')
+            print(f'Node {self.id} started on http://{address}:{port}')
         except Exception as e:
             sys.stderr.write('Error: ' + format(str(e)) + "\n")
             sys.exit(1)
